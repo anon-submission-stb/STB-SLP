@@ -1,0 +1,9 @@
+torch==2.5.1
+torchtext==0.4.0
+numpy==2.0.1
+einops==0.8.0
+PyYAML==6.0.2
+tensorboard==2.19.0
+opencv-python==4.11.0.86
+# only for tools/prepare_csl_daily.py
+smplx

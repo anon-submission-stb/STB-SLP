@@ -1,0 +1,75 @@
+data:
+  src: gloss              # source: gloss sequence
+  trg: skels              # target: 3D skeleton (50 joints x 3 + counter)
+  files: files            # sequence names
+  train: ./data/phoenix14t/train
+  dev: ./data/phoenix14t/dev
+  test: ./data/phoenix14t/test
+  max_sent_length: 300
+  skip_frames: 1
+  src_vocab: ./Configs/src_vocab.txt
+training:
+  random_seed: 27
+  optimizer: adam
+  learning_rate: 0.0005
+  learning_rate_min: 0.0001   # training stops when the LR falls below this value
+  weight_decay: 0.0
+  clip_grad_norm: 5.0
+  batch_size: 64
+  scheduling: plateau
+  patience: 7
+  decrease_factor: 0.7
+  early_stopping_metric: dtw
+  epochs: 20000
+  validation_freq: 2000
+  logging_freq: 250
+  eval_metric: dtw
+  model_dir: ./Models/fgdm_stb_phoenix14t
+  overwrite: false         # true: delete model_dir before training; resume with --ckpt
+  shuffle: true
+  use_cuda: true
+  max_output_length: 300
+  keep_last_ckpts: 1
+  loss: L1
+  bone_loss: MSE
+  save_videos: false       # render mp4s of validation/test sequences (slow)
+  use_scg: true
+model:
+  initializer: xavier
+  bias_initializer: zeros
+  embed_initializer: xavier
+  trg_size: 150
+  just_count_in: false
+  gaussian_noise: false
+  noise_rate: 5
+  future_prediction: 0
+  stb:
+    num_frame: 500         # length of the STB temporal positional embedding
+  encoder:
+    type: transformer
+    num_layers: 2
+    num_heads: 4
+    embeddings:
+      embedding_dim: 512
+      dropout: 0.0
+    hidden_size: 512
+    ff_size: 2048
+    dropout: 0.0
+  diffusion:
+    timesteps: 1000
+    sampling_timesteps: 5
+    scale: 1.0
+    num_layers: 2
+    num_heads: 4
+    hidden_size: 512
+    ff_size: 2048
+    dropout: 0.1
+    embeddings:
+      embedding_dim: 512
+      dropout: 0.1
+  scgmodel:
+    input_size: 512
+    conv_type: 5
+    hidden_size: 1024
+    use_bn: 1
+    loss_weights: 0.0001
